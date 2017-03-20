@@ -1,0 +1,283 @@
+---
+title: "Standard errors"
+author: "Sid Basu"
+output:
+  html_document: 
+    toc: true
+---
+  
+```{r global_options, include=F, echo = F}
+library(knitr)
+library(Rbnb)
+library(purrr)
+library(infuser)
+opts_chunk$set(fig.width=12, fig.height=6, echo=T, warning=F, message=F)
+options(digits = 3)
+global_eval <- FALSE
+airbnb_on(theme = 'fancy')
+```
+
+
+###Distribution of OLS errors
+
+In this section, I show that $\sum_{i = 1}^n \hat{\epsilon}_i^2 \sim \sigma^2 \chi_{n-p}^2$. 
+
+Let $H = X(X'X)^{-1}X'$. Then $\hat{\epsilon} = (I - H)y$ We know that $\sum_{i = 1}^n \hat{\epsilon}_i^2 = \hat{\epsilon}^T \hat{\epsilon} = y^T(I - H)^T(I - H)y$.
+
+Now, note that:
+
+\begin{align}
+(I - H)y &= (I - X(X'X)^{-1}X)(X\beta + \epsilon) \\
+&= (I - X(X'X)^{-1}X) \epsilon \\
+&= (I - H) \epsilon
+
+\end{align}
+
+Therefore, we can expand:
+
+\begin{align}
+\hat{\epsilon}^T \hat{\epsilon} &= y^T(I - H)^T(I - H)y \\
+&= \epsilon^T(I - H)^T(I - H)\epsilon \\
+&= e^T (I - H) e
+
+\end{align}
+
+
+Since $H$ is symmetric and idempotent.
+
+Now diagonalize $I - H$ as $P \Lambda P^T$, where $P$ is orthogonal (real symmetric matrices have real orthogonal eigenvectors). Since $(I - H)$ is idempotent, we have the following:
+
+
+\begin{align}
+
+(P \Lambda P^T)^2 &= P \Lambda P^T \\
+P \Lambda P^T P \Lambda P^T &=  P \Lambda P^T \\
+P \Lambda^2 P^T &= P \Lambda P^T \\
+\Lambda ^2 &= \Lambda \\ 
+\lambda_i^2 &= \lambda_i
+
+\end{align}
+
+
+Therefore $\lambda_i \in \{ 0, 1 \}$ for all $i$. Now, let us define $\eta = P^T \epsilon \sim N(0, \sigma^2 I)$. We know $\eta$'s distribution since rotations have no effect on the normal distribution. 
+
+Then we have that:
+
+\begin{align}
+\epsilon^T (I - H) \epsilon &= \epsilon^T P \Lambda P^T \epsilon \\
+&= \eta^T \Lambda \eta \\
+&= \sum_{i = 1}^n \eta_i^2 \lambda_i \\
+&= \sigma^2 \chi^2_{\sum \lambda_i} \\
+&= \sigma^2 \chi^2_{n - k}
+\end{align}
+
+Since the rank of $I - H$ is $n - k$. This implies that $s^2 = \frac{\hat{\epsilon}^T \hat{\epsilon}}{n -k}$ is an unbiased estimator of $\sigma^2$
+
+###Multiplying diagonal matrices
+
+###Notes for SQL t-test
+
+$$   X^T X= \left[ {\begin{array}{cc} N &  n_t\\ n_t & n_t \  \end{array} }\right]$$
+$$ \text{det} (X^T X) = (n_t + n_c)n_t - n_t^2 = n_t^2 + n_t n_c - n_t^2 = n_t n_c $$
+
+$$ (X^T X)^{-1} = \frac{1}{n_t n_c} \left[ {\begin{array}{cc} n_t &  -n_t\\ - n_t & n_t + n_c \  \end{array} }\right] $$
+
+$$ (X^T X)^{-1}_{22} = \frac{n_t + n_c}{n_t n_c} = \frac{1}{n_c} + \frac{1}{n_t}$$
+
+
+
+
+###Standard error code
+
+Inspiration here https://diffuseprior.wordpress.com/2012/06/15/standard-robust-and-clustered-standard-errors-computed-in-r/
+
+####Normal standard error calculation
+
+```{R}
+library(foreign)
+#load data
+data <- read.dta("~/data/fertil2.dta")
+
+#run regressions
+r1 <- lm(ceb ~ age + agefbrth + usemeth, data = data)
+
+#get required data from regressions
+X <- model.matrix(r1)
+n = dim(X)[1]
+k = dim(X)[2]
+```
+
+```{R}
+#get estimate of s^2
+s2 <- as.numeric(crossprod(r1$residuals)) / (n - k)
+
+#compute s^2 * (X'X)^{-1}
+V <- s2 * solve(crossprod(X))
+
+#get standard errors out
+se_1 <- sqrt(diag(V))
+```
+
+####White standard errors
+
+```{R}
+#Get the data matrix, degrees of freedom
+X <- model.matrix(r1)
+n <- dim(X)[1]
+k <- dim(X)[2]
+dfc <- n / (n - k)
+
+#Construct weighting matrix 
+r2 <- (r1$residuals) ^ 2
+D <- diag(r2)
+psi <- t(X) %*% D %*% X
+
+#Put it all together to get the covariance matrix
+V <- solve(crossprod(X)) %*% psi %*% solve(crossprod(X))
+se_w1 <- sqrt(dfc * diag(V))
+```
+
+####White standard errors with a for loop
+
+```{R}
+#Get the data matrix, degrees of freedom
+X <- model.matrix(r1)
+n <- dim(X)[1]
+k <- dim(X)[2]
+dfc <- n / (n - k)
+
+#Construct the weighting matrix with a loop
+psi <- mat.or.vec(k,k)
+r2 <- (r1$residuals) ^ 2
+
+for(i in seq_along(1:n)){
+  psi <- psi + X[i,] %*% t(X[i,]) * r2[i] 
+}
+
+#put it all together to get the covariance matrix
+V <- solve(crossprod(X)) %*% psi %*% solve(crossprod(X))
+se <- sqrt(dfc * diag(V))
+```
+
+####Clustered standard errors
+
+```{R}
+#truncate data so that model matrix and residuals match data
+data %>% 
+  filter(!is.na(age) & !is.na(agefbrth) & !is.na(usemeth)) -> data_trunc
+
+#get residuals, model matrix
+X <- model.matrix(r1)
+r <- r1$residuals
+
+n <- dim(X)[1]
+k <- dim(X)[2]
+
+# cluster name
+cluster <- "children"
+
+#cluster values
+data_trunc %>% 
+  distinct_(cluster) %>% 
+  arrange() -> cluster_vals
+
+#degrees of freedom correction
+n_groups <- dim(cluster_vals)[1]
+dfc <- n_groups / (n_groups - 1) * ((n - 1)/(n - k))
+
+#initialize cluster covariance matrix
+psi <- mat.or.vec(k,k)
+
+#loop through clusters to get middle matrix
+for(i in 1:n_groups){
+  #get the model matrix and residual for the group
+  X_group <- X[data_trunc[, cluster] == cluster_vals[[1]][i],]
+  e_group <- r[data_trunc[, cluster] == cluster_vals[[1]][i]]
+
+  #calculate the group's covariance matrix
+  if(length(e_group) > 1){
+    psi <- psi + tcrossprod(t(X_group) %*% e_group)
+  } else {
+    psi <- psi + tcrossprod(X_group * e_group)
+  }
+}
+
+#calculate variance-covariance matrix, clustered standard errors
+V_clustered <- dfc * solve(crossprod(X)) %*% psi %*% solve(crossprod(X))
+se_clustered <- sqrt(diag(V))
+
+```
+
+
+####Clustered standard error starter code 1
+
+```{R}
+#truncate data
+data %>% 
+  filter(!is.na(age) & !is.na(agefbrth) & !is.na(usemeth)) -> data_trunc
+
+# cluster name
+cluster <- "children"
+# matrix for loops
+clus <- cbind(X,data_trunc[,cluster],resid(r1))
+colnames(clus)[(dim(clus)[2]-1):dim(clus)[2]] <- c(cluster,"resid")
+# number of clusters
+m <- dim(table(clus[,cluster]))
+# dof adjustment
+dfc <- (m/(m-1))*((n-1)/(n-k))
+# uj matrix
+uclust <- matrix(NA, nrow = m, ncol = k)
+gs <- names(table(data[,cluster]))
+for(i in 1:m){
+   uclust[i,] <- t(matrix(clus[clus[,cluster]==gs[i],k+2])) %*% clus[clus[,cluster]==gs[i],1:k] 
+}
+
+# square root of diagonal on bread meat bread like before
+se <- sqrt(diag(solve(crossprod(X)) %*% (t(uclust) %*% uclust) %*% solve(crossprod(X)))*dfc)
+
+```
+
+####Clustered standard error starter code 2
+
+```{R}
+get_CL_vcov <- function(model, cluster){
+  require(sandwich, quietly = TRUE)
+  require(lmtest, quietly = TRUE)
+  
+  # calculate degree of freedom adjustment
+  M <- cluster %>% unique %>% length
+  N <- cluster %>% length 
+  K <- model %>% .$rank
+  dfc <- (M/(M-1))*((N-1)/(N-K))
+  
+  # calculate the uj's
+  uj  <- model %>% estfun %>% apply(2, function(x) tapply(x,cluster,sum))
+  
+  #use sandwich to get the var-covar matrix
+  vcovCL <- dfc * model %>% sandwich(meat = uj %>% crossprod / N)
+  vcovCL %>% return
+}
+
+```
+
+
+####Appendix: Check whether my presto code works
+
+```{R}
+library(Rbnb)
+```
+
+```{R}
+data_test = presto("select id_user, dim_treatment, new_active_listings_capped from sid_basu.commitment_nal_aggregate where dim_country = 'ES'")
+```
+
+```{R}
+data_test %>% 
+  spread(dim_treatment, new_active_listings_capped) -> data_spread
+
+meep <- t.test(data_spread$control, data_spread$show_commitment)
+```
+
+
+
+
