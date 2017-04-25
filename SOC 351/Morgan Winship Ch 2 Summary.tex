@@ -6,6 +6,7 @@
 \usepackage{graphicx}
 \usepackage[margin=0.5in]{geometry}
 \setlength\parindent{0pt}
+\newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
 
 
 \begin{document}
@@ -15,6 +16,7 @@
 \date{\today}
 \maketitle
 
+\section{Counterfactuals and the Potential Outcome Model}
 \subsection{Potential Outcomes}
 In causal inference, we are generally interested in individual-level causal impacts of the treatment:
 
@@ -72,8 +74,83 @@ Effectively estimating these types of effects requires a \textbf{nested randomiz
 
 \subsection{Treatment Assignment and Observational Studies}
 
+For a properly-run randomized experiment, treatment status gives no information about subject $i$'s what-if outcome under the treatment and control states: $y_i^1$ and $y_i^0$. Mathematically we have:
 
+$$(Y^1, Y^0) \indep D$$
 
+This implies that, in the full population, ex ante to any pattern of treatment assignment, $D$ is independent of $Y^0$, $Y^1$. Then treatment is assigned, and values of $Y$ emerge, at which point $Y$ and $D$ are dependent. 
 
+The main difference between an experiment and an \textbf{observational study} is that the analyst can control treatment assignment in an experiment, whereas they only observe them in an observational study. An observational researcher can only observe pairs $\{y_i, d_i\}_i^N$. Then they have to understand the treatment selection mechanism and account for it (this is often impossible).
+
+\subsection{Average Causal Effects and Naive Estimation}
+
+The fundamental problem of causal inference means that we have to zoom out to non-individual level causal effects.
+
+\subsubsection{Conditional Average Treatment Effects}
+
+The unconditional average treatment effect $E[\delta] = E[Y^1 - Y^0] = E[Y^1] - E[Y^0]$ can't be estimated due to the fundamental problem of causal inference. Some other average treatment effects that we can't directly compute are the average treatment effect for those who typically take the treatment (\textbf{ATT}):
+
+$$E[\delta|D = 1] = E[Y^1|D=1] - E[Y^0|D=1]$$
+
+And the average treatment effect for those who typically do not take the treatment (\textbf{ATC}):
+
+$$E[\delta|D = 0] = E[Y^1|D=0] - E[Y^0|D=0]$$
+
+Sometimes these are as or more interesting than the ATE. For example, in the worker training problem, the ATT is the average wage gain for those who enrolled in the program, which is quite important. 
+
+\subsubsection{Naive Estimation of Average Treatment Effects}
+
+Let $\pi$ be the fraction of the population in treatment. Then the ATE can be computed:
+
+\begin{align*}
+E[\delta] &= \{\pi E[Y^1|D=1] + (1-\pi) E[Y^1|D=0] \} \\
+&- \{\pi E[Y^0|D=1] + (1-\pi) E[Y^0|D=0] \}
+\end{align*}
+
+Unfortunately, we are only able to compute the following three of the five unknowns in the above equation:
+
+\begin{align*}
+E_N[d_i] &\rightarrow \pi \\
+E_N[y_i|d_i = 1] &\rightarrow E[Y^1|D=1] \\
+E_N[y_i|d_i = 0] &\rightarrow E[Y^0|D=0] 
+\end{align*}
+
+Without assumptions, there is no way to compute unbiased estimates of $E[Y^1|D = 0]$ and $E[Y^0|D=1]$
+
+\subsubsection{The Typical Inconsistency and Bias of the Naive Estimator}
+
+Note the following decomposition of the naive estimator:
+
+\begin{align*}
+E[Y^1|D=1] - E[Y^0|D = 0] &= E[\delta] + \{E[Y^0|D = 1] - E[Y^0|D = 0] \} \\
+&+ (1-\pi)\{E[\delta|D = 1] - E[\delta | D = 0] \}
+\end{align*}
+
+This identifies the two major sources of bias:
+
+\begin{itemize}
+\item \textbf{Baseline bias:} The difference in expected outcome in the absence of the treatment between those in the treatment group and those in the control group.
+
+\item \textbf{Differential treatment effect bias:} The expected difference in the treatment effect between those in the treatment group and those in the control group. 
+\end{itemize}
+
+For example if we looked at the effect of college attendance on earnings, there could be three sources of higher incomes by college educated individuals. Firstly, attending college may give you the skills to earn more ($E[\delta]$). Secondly, those that attend college may have higher baseline expected earnings, eg. because their parents are richer. Thirdly, college may increase earnings for those that select to go to college more than for those who choose not to go to college. 
+
+\subsubsection{Estimating Causal Effects Under Maintained Assumptions About Potential Outcomes}
+
+There are two basic classes of assumptions that are variants of each other: (1) assumptions about potential outcomes for the treatment and control groups, (2) assumptions about the treatment assignment/selection process. We discuss (1) in this section. Consider the following two assumptions:
+
+\begin{align*}
+E[Y^1|D =1]&= E[Y^1|D = 0] \\
+E[Y^0|D =1]&= E[Y^0|D = 0]
+\end{align*}
+
+If both of these are maintained, then ATT, ATC and ATE are all equal, and the naive estimator works. Random assignment makes these assumptions reasonable. They are not reasonable for observational studies. 
+
+If only the first assumption holds, then we can still estimate ATC, since $E[\delta|D = 0] = E[Y^1|D=0] - E[Y^0|D=0] = E[Y^1|D=1] - E[Y^0|D=0] $.
+
+If only the second assumption holds, then we can still estimate ATT, since $E[\delta|D = 1] = E[Y^1|D=1] - E[Y^0|D=1] = E[Y^1|D=1] = E[Y^0|D=0]$. 
+
+\section{Extra Class Notes}
 
 \end{document}
