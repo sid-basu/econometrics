@@ -153,4 +153,45 @@ If only the second assumption holds, then we can still estimate ATT, since $E[\d
 
 \section{Extra Class Notes}
 
+\subsubsection{Lecture 1}
+
+To have a \textbf{confound} you need correlation with the outcome (Y) and the controls (X). The most lethal confounds have a low correlation with X (since otherwise a regression would mostly control for them). \\
+
+More generally, when allocation of units into the treatment and control is related to the outcome of interest, we have a problem. This is known by many terms, \textbf{confounding}, \textbf{non-ignorability}, unobserved heterogeneity, spuriousness, selection bias, and (a bit more narrowly) omitted variable bias. \textbf{Omitted variable bias} is a bit more limited since it is a problem that arises from limited data.
+
+\textbf{Endogeneity} is when one or more covariates $X$ are correlated the error term $e$. It can come from:
+
+\begin{itemize}
+\item Confounding
+\item Reverse causality/simultaneity
+\item Measurement error
+\end{itemize}
+
+Simultaneity as a cause of endogeneity: simultaneity is when y depends on x and x depends on y. For example, in the sex frequency housework case, the wife may calculate sex frequency based on the husband's housework and the husband may calculate housework based on the wife's sex frequency. To see how this plays out mathematically:
+
+\begin{align*}
+y_1 &= \alpha_0 + \alpha_1 y_2 + \alpha_2 x_1 + \alpha_2 x_2 + e_1 \\
+y_2 &= \beta_0 + \beta_1 y_1 + \beta_2 x_1 + \beta_2 x_2 + e_2
+\end{align*}
+
+Then, if $e_1$ is high, this forces $y_1$ to be high, which forces $y_2$ to be high. This leads to a correlation between $e_1$ and $y_2$, i.e. endogeneity. 
+
+\subsubsection{Lecture 2}
+
+Generally, you want covariates to be measured \textbf{before} treatment assignment.  \\
+
+\textbf{Conditional Ignorability}, in an observational study, in order for covariance adjustment to provide an unbiased estimate of the causal effect we need to rely on the strong assumption that X is the only confounder.
+
+$$Y(0), Y(1) \indep T|X $$
+
+After controlling for X, the potential outcomes are independent of the treatment assignment. This assumption is called conditional ignorability and no hidden bias by statisticians, and selection on observables, conditional independence or unconfoundedness by economists. 
+
+\textbf{Assumptions for experiments}. For an experiment to work well you need compliance, no attrition, no interference and homogenous treatment. No interference and homogeneous treatment can are put together in \textbf{SUTVA}. 
+
+
+
+
+
+
+
 \end{document}
