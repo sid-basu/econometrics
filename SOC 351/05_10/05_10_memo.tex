@@ -1,0 +1,75 @@
+\documentclass[12 pt, leqno]{article}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\setlength\parindent{20pt}
+\usepackage{setspace} 
+\newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+
+
+\begin{document}
+
+\title{Class Reading Summary}
+\author{Siddhartha Basu}
+\date{\today}
+\maketitle
+
+\section{Angrist, Imbens and Rubin: Causal Effects and Instrumental Variables}
+
+This paper reads more like a textbook chapter, so my response will be more of a summary than a "response". The authors' main goal for the paper appears to be reconciling the typical exclusion restrictions for an instrumental variables estimator within the Rubin Causal Model. To me it seems like a mildly helpful exercise, since it clarifies the local average treatment effect  and how the exclusion restriction works to some degree. However, some of the formulae used in the exposition do not make sense to me, and it would be great to get a deeper explanation of them. 
+
+Sections 1 and 2 are an introduction and a rehash of the standard way the instrumental variables estimator is presented. In section 3, the authors go through the main assumptions of the Rubin Causal Model. Let $Z_i$ be an instrument, $D_i(Z)$ be the treatment, and $Y_i(Z,D)$ be the outcome of interest. Then the \textbf{Causal Effect of Z on D} is $D_i(1) - D_i(0)$ and the \textbf{Causal Effect of Z on Y} is:
+
+$$Y_i(1, D_i(1)) - Y_i(0, D_i(0)) $$
+
+The main assumptions to have a satisfactory instrumental variable Z are then:
+
+\begin{enumerate}
+\item  
+	\begin{itemize}
+	\item SUTVA (for D) If $Z_i = Z'_i$ then $D_i(Z) = D_i(Z')$
+	\item SUTVA (for Y) IF $Z_i = Z'_i$ and $D_i = D'_i$ then $Y_i(Z,D) = Y_i(Z', D')$ 
+	\end{itemize}
+\item Random assignment: $P(Z = c) = P(Z = c')$ where c' has the same amount of subjects in T and C as c. This can be weakened to ignorable assignment. 
+\item Exclusion restriction: $Y(Z,D) = Y(Z',D)$ for all $Z, Z', D$. This basically means that the effect of Z on Y is only through D.
+\item Nonzero average causal effect of Z on D: $E[D_i(1) - D_i(0)] \neq 0$
+\item Monotonicity: $D_i(1) \geq D_i(0)$ for all $i$. 
+\end{enumerate}
+
+Using SUTVA and random assignment, we can estimate the average causal effect of Z on Y with $E(Y|Z = 1) - E(Y|Z = 0)$ and the average causal effect of Z on D with $E(D|Z = 1) - E(D|Z = 0)$. I am not sure how the authors fully derived equations (7) and (8) however. 
+
+With all of these assumptions, we can then try to understand the IV estimand in more depth. First, we can simplify its expression to:
+
+$$Y_i(1, D_i(1)) - Y_i(0, D_i(0)) = (Y_i(1) - Y_i(0))(D_i(1) - D_i(0)) $$
+
+Ie. the IV estimand is the product of the treatment effect of D on Y and that of Z on D. By expanding the expectation of the above out and using monotonicty we can write:
+
+$$E[Y_i(D_i(1), 1) - Y_i(D_i(0), 0)] = E[(Y_i(1) - Y_i(0)| D_i(1) - D_i(0) = 1] P[D_i(1) - D_i(0) = 1] $$
+
+Rearranging, we get the \textbf{causal interpretation of the IV estimand}:
+
+$$\frac{E[Y_i(D_i(1), 1) - Y_i(D_i(0), 0)]}{E[D_i(1) - D_i(0) = 1]} = E[(Y_i(1) - Y_i(0)| D_i(1) - D_i(0) = 1]$$
+
+This is also known as the \textbf{Local Average Treatment Effect}. We can explain this further in terms of $D_i(1)$, and $D_i(0)$. There are four categories of subjects:
+
+\begin{itemize}
+\item Never takers (Would never go to the military, regardless of draft status)
+\item Defiers (They go to the military if not drafted, don't if drafted)
+\item Compliers (They go to the military if drafted, don't if not drafted)
+\item Always Takers (Would always go to the military, regardless of draft status)
+\end{itemize}
+
+Our assumptions imply that the average causal effect of Z on Y is proportional to the average causal effect of D on Y for compliers. Never takers and always takers don't have much impact on IV, they comprise of subjects where Z has no impact on Y. However, we do not want never takers and always takers to be the whole sample (that would violate assumption 4, nonzero average causal effect of Z on D). On the other hand, defiers violate monotonicity and pose a fatal flaw to IV estimation if present. 
+
+The authors then compare this framework to the standard (structural equation framework) presentation of IV. I think that this was quite helpful in deepening my understanding of instrumental variables and how they connect to the Rubin Causal Model. The remainder of the paper goes through sensitivity of the model to violations of these assumptions and an application of the framework to the draft instrument on the effects of military service.
+
+\section{Lifetime Earnings and the Vietnam Era Draft Lottery}
+
+Since I am already at 2 pages, I will be short in my response to this paper. Overall, I think that using draft number as an instrument for military service is intuitive, and mostly satisfies the exclusion restrictions. One can make a case that SUTVA is violated if people want to serve with friends. One can also make the case that people with low lottery numbers changed their educational plans, which would violate the exclusion restriction. Nevertheless, I think that the instrument works, and makes sense. 
+
+My other concerns with this paper are that the results are often not statistically significant (especially table 4, the two stage IV estimates). One broader comment is that since the estimator essentially scales the treatment effect of being a veteran on compliers ($\alpha = (\bar{y}^e - \bar{y}^n)/(\hat{p}^e -\hat{p}^n)$), it appears to make the effects look quite large. Finally, I didn't fully understand a lot of what the authors were doing for "efficient IV estimation". 
+
+\end{document}
