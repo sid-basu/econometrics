@@ -1,0 +1,60 @@
+\documentclass[12 pt, leqno]{article}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\setlength\parindent{20pt}
+\usepackage{setspace} 
+\doublespacing
+\newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+
+
+\begin{document}
+
+\title{Class Reading Summary}
+\author{Siddhartha Basu}
+\date{\today}
+\maketitle
+
+\subsection*{Why Border Enforcement Backfired}
+
+In this paper, the authors' goal is to understand the causal effects of border enforcement spending on illegal immigrants decisions. The main decisions that they study are crossing mode, crossing place, crossing cost, apprehension, whether an immigrant takes a first trip across the border, whether they take a return trip, and whether they take origin or return trips a second time. They find that an increase in border patrol spending `causes' more dangerous crossings and migrants to settle down in the US over time.  
+
+My main takeaways from the paper are twofold. First, I think that the paper adds value to the literature by using a dataset with over 10,000 illegal border crossings. Finding data about illegal crossings, especially at this scale, is extremely hard, and the authors did well to collect it. Secondly, I have doubts as to their use of DEA spending as an instrument for Border Patrol spending. To see these doubts specifically, I'll briefly go over their identification strategy (omitting the other controls that were used):
+
+\begin{itemize}
+\item First stage: $\hat{\text{border enforcement budget}} = \alpha_0 + \alpha_1 \text{DEA budget} + v$
+\item Second stage: $y = \beta_0 + \beta_1 \hat{\text{border enforcement budget}} + e$
+\end{itemize}
+
+For DEA budget to be a valid instrument for border enforcement budget, the following assumptions would need to be met. $E(DEA \times e) = 0$, $E(DEA \times v) = 0$ and $cov(BE, DEA) \neq 0$. The first assumption is the exclusion restriction, and one that is tenuous. The exclusion restriction essentially states that the only way the DEA budget would affect migrants decisions is through the border enforcement budget. But what if the DEA budget affected coyote decision making (if they are affiliated with drug cartels), which affected migrant decision making. The second and third assumptions seem relatively reasonable to me, I don't know what unobservables would affect a regression of border enforcement budget on DEA budget, and the authors' evidence clearly shows a nonzero correlation between border enforcement budget and DEA budget. 
+
+I have two other concerns about the authors identification strategy. First, I still think that there could be reverse causality, where increased migration causes the government to increase DEA budget/border patrol budget. The authors provide a case against this hypothesis but I am not terribly convinced. 
+
+Secondly, I think that there could be an underlying time trend that could be driving all of these results. The authors graph of DEA budget vs border control budget show both going up relatively uniformly over time. Therefore the fitted values of border control budget on DEA budget could just show a time trend. I am not sure how this fits into an IV assumption being violated, but it does not seem great to me. Finally, I tried to understand whether DEA spending is a valid instrument using the `Rubin Causal Model'-esque thinking in the Angrist et. al. paper we read last week but became thoroughly confused since the instrument was continuous and not discrete. Is there any extension of that paper's line of thinking to a continuous instrument?
+
+\subsection*{Residential Change and Recidivism: Lessons from Hurricane Katrina}
+
+In this paper the authors want to study the causal impact of moving to a different neighborhood upon release from prison on recidivism. They use Hurricane Katrina as an instrument for neighborhood change and find that those who do change neighborhoods are less likely to be recidivists. Since the authors use a binary instrument on a binary control, I can use the `Rubin Causal Model' like thinking to understand the validity of the instrument. I go through the main assumptions one by one. Let $Z$ be an indicator for whether Hurricane Katrina affected someone, $D$ be an indicator of whether they moved and $Y$ be an indicator for recidivism.  
+
+\begin{itemize}
+\item SUTVA for Z on D: Moving should only be affected by whether you were affected by Katrina, and not whether your friends were. I think this could be violated in the Katrina case since one might be convinced to return to a neighborhood if all of your friends were. That is, there could be peer effects in rebuilding.
+
+\item SUTVA for Z and D on Y: Recidivism should only be affected by ones own choice to move, and whether someone themselves were affected by Katrina. Again, this could be violated since there are peer effects in recidivism.
+
+\item Ignorable assignment. I didn't get a great definition of this so I'm not sure that it works.
+
+\item Exclusion restriction: Katrina only affects recidivism through the decision to move. I'm not sure whether this really holds, since a major event like Katrina can affect life outcomes in many ways. There could also be time trends that get picked up in the pre-post Katrina comparison.
+
+\item Nonzero average causal effect of Katrina on moving. This is clearly true.
+
+\item Monotonicity. This makes sense in this case. I find it highly unlikely that being hit with a hurricane makes you less likely to move.
+\end{itemize}
+
+Overall, I think that this is an interesting paper that studies a hard subject, but one with some remaining concerns about identification. 
+
+
+
+\end{document}

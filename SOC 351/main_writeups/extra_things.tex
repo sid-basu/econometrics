@@ -1,0 +1,60 @@
+\documentclass[12 pt, leqno]{article}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\setlength\parindent{20pt}
+\usepackage{setspace} 
+\newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+
+
+\begin{document}
+
+\title{Extra things from SOC 351}
+\author{Siddhartha Basu}
+\date{\today}
+\maketitle
+
+
+\section{Things left over}
+
+Diff in diff assumptions
+
+Regression discontinuity assumptions
+
+Advanced IV (Mostly harmless chapter on IV)
+
+Advanced fixed effects (Wooldridge chapter on FE, really getting non-nested multi-dimensional FE)
+
+
+
+
+\section{Questions for Florencia}
+\begin{itemize}
+\item Does exogeneity restriction only matter for $D$, or other $X$? Answer: D is the most important variable. If you have a violation for other X, it is not world ending...however this makes it more important for you to have linearity. 
+\item Strict exogeneity $cov(x_{it}, e_{is}) = 0$ for all $t, s$ vs. no time varying confounders. 
+\item Going over fixed effects assumptions (treatment random, strict exo, treatment on outcome)
+\item Exogeneity $cov(x,e) = 0$ vs. $E(e_{i1|d=1} - e_{i1|d = 0})$
+\item Variation when you have multiple FE (host, month), how do assumptions change?
+\item Example: variation of birthweight within twins to predict causal impact of birthweight on test score
+\item Example: individual fixed effect for effect on marriage on wages
+\item Example: school and year fixed effects, then regress failure rate on murder in municipality
+\item Example: listingxchannel and marketxmonth fixed effects for host heterogeneity
+\item Example: route fixed effects for causal impact of airline on delay?
+\item Example: Moorish influence on Spanish government?
+\end{itemize}
+
+New questions for florencia:
+\begin{itemize}
+\item `within individual variation to identify' -- How does this change for multi-dimensional fixed effects?
+\item Do you need to assume that `marriage is an absorbing state' for deviation from means estimator to work?
+\item General intuition for non-nested fixed effects models. 
+\item How are the $\beta$'s the same for the deviation from means estimator or first difference estimator?
+\item Does clustering solve serial correlation problem if you have year fixed effects?
+\item ask for slides
+\end{itemize}
+
+
+\end{document}

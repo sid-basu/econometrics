@@ -1,0 +1,40 @@
+\documentclass[12 pt, leqno]{article}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[margin=1in]{geometry}
+\setlength\parindent{20pt}
+\usepackage{setspace} 
+\doublespacing
+\newcommand{\indep}{\rotatebox[origin=c]{90}{$\models$}}
+
+
+\begin{document}
+
+\title{Class Reading Summary}
+\author{Siddhartha Basu}
+\date{\today}
+\maketitle
+
+\subsection*{The Impact of the Texas Top 10 Percent Law on College Enrollment}
+
+This paper looks at the impact of the Texas top 10 percent law on student's college enrollment outcomes. The Texas top 10 percent law stipulated that students in the top 10 percent of their high school graduating class may attend any Texas public university of their choosing. This law was intended to allow students from traditionally disadvantaged backgrounds to attend the top public schools in Texas.
+
+The authors main empirical strategy is to consider three characteristics of interest, student race, high school race demographics, and high school wealth. Within each characteristic, the authors then break the sample down into constituent groups (eg. student race is characterized as white/black/latino/asian), and then run a regression discontinuity analysis within each group to see whether students who just missed the top 10 percent in their high school were more or less likely to attend UT Austin or Texas A and M University than those who barely made it into the top 10 percent.
+
+The main finding of the paper is that for Latino students, students in majority minority schools, and students in `typical' economic status schools, there is a statistically significant decrease in probability of attending Texas A and M or UT Austin when one falls just below the top 10 percent of their high school class. Overall, I find that the paper's use of regression discontinuity meets the necessary conditions for an unbiased estimate. The top 10 percent law implements a sharp cutoff, below which it is harder to get into a top college. Students on either side of the cutoff are plausibly similar to each other, so comparing them would give us a good estimate of whether being in the top 10 percent of one's high school class makes them more likely to attend UT Austin or Texas A and M.
+
+My main criticism of this paper is that I think the narrative presentation is poor and the main question asked is not the most interesting question that one could ask. The authors provide very little discussion about why the groups where they saw an effect would be the ones where an effect would be present. Also, the question the authors effectively answer is, `does being in the top 10 percent of your high school class make you more likely to attend UT Austin or Texas A and M under the top 10 percent law?'. That seems like a question with an obvious answer to me. A more relevant question would be something along the lines of `does the top 10 percent law make it more or less likely for students of a certain demographic to attend Texas A and M or UT Austin'. This is admittedly a harder question to answer. 
+
+Finally, I'm disappointed that the authors don't pool the data in their regressions, and instead run regressions for each demographic group/high school ethnic composition/high school economic strata. This means that the richness of potential interactions in the data cannot be unearthed. For example, what are the racial demographics of the `typical' economic high schools that see a major effect of the top 10 percent law. 
+
+\subsection*{Compensatory Advantage as a Mechanism of Educational Inequality}
+
+Compared to the Niu and Tienda paper, this paper has a much clearer narrative. The author uses a regression discontinuity methodology to show two main trends. Firstly, students born in November and December are more likely to fail a grade than their classmates born in January and February. Secondly, this effect is weaker for students with more privileged backgrounds. Like in the Niu and Tienda paper, I have no major problems with the application of regression discontinuity to the context. The January 1 cutoff for enrollment in a grade creates a natural demarcation point in student age when starting school and I believe the authors explanation that the seasonal correlations of birth month with socioeconomic status are less relevant when one only considers winter births. 
+
+The regression specifications controlling for parent education as a proxy for privilege are okay, although I would have liked to see more controls (eg. income) in the regressions. All in all, I find the paper to answer an interesting question with a cohesive narrative. 
+
+
+\end{document}
